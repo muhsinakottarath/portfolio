@@ -15,6 +15,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   items.forEach((item) => observer.observe(item));
 
+  // ---- Day / night toggle (the page starts white; the choice is remembered) ----
+  const themeToggle = document.getElementById("theme-toggle");
+  if (themeToggle) {
+    const root = document.documentElement;
+    const applyTheme = (theme) => {
+      if (theme === "dark") root.setAttribute("data-theme", "dark");
+      else root.removeAttribute("data-theme");
+      themeToggle.setAttribute("aria-pressed", String(theme === "dark"));
+      themeToggle.setAttribute(
+        "aria-label",
+        theme === "dark" ? "Switch to day mode" : "Switch to night mode"
+      );
+    };
+    applyTheme(root.getAttribute("data-theme") === "dark" ? "dark" : "light");
+    themeToggle.addEventListener("click", () => {
+      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      applyTheme(next);
+      try {
+        localStorage.setItem("theme", next);
+      } catch (error) {
+        // Private mode or blocked storage: the toggle still works for this visit.
+      }
+    });
+  }
+
   // ---- Certificate viewer (certifications page) ----
   const viewer = document.getElementById("cert-viewer");
   if (viewer && typeof viewer.showModal === "function") {
