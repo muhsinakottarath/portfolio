@@ -15,6 +15,55 @@ document.addEventListener("DOMContentLoaded", () => {
 
   items.forEach((item) => observer.observe(item));
 
+  // ---- Certificate viewer (certifications page) ----
+  const viewer = document.getElementById("cert-viewer");
+  if (viewer && typeof viewer.showModal === "function") {
+    const rows = Array.from(document.querySelectorAll("a[data-cert]"));
+    const img = document.getElementById("cert-viewer-img");
+    const titleEl = document.getElementById("cert-viewer-title");
+    const metaEl = document.getElementById("cert-viewer-meta");
+    const countEl = document.getElementById("cert-viewer-count");
+    const pdfEl = document.getElementById("cert-viewer-pdf");
+    let current = 0;
+
+    const show = (index) => {
+      current = (index + rows.length) % rows.length;
+      const row = rows[current];
+      img.src = row.getAttribute("href");
+      img.alt = "Certificate: " + row.dataset.title;
+      titleEl.textContent = row.dataset.title;
+      metaEl.textContent = row.dataset.meta;
+      countEl.textContent = current + 1 + " of " + rows.length;
+      if (row.dataset.pdf) {
+        pdfEl.href = row.dataset.pdf;
+        pdfEl.hidden = false;
+      } else {
+        pdfEl.hidden = true;
+      }
+    };
+
+    rows.forEach((row, i) => {
+      row.addEventListener("click", (event) => {
+        event.preventDefault();
+        show(i);
+        viewer.showModal();
+      });
+    });
+
+    viewer.querySelector("[data-cert-prev]").addEventListener("click", () => show(current - 1));
+    viewer.querySelector("[data-cert-next]").addEventListener("click", () => show(current + 1));
+    viewer.querySelector("[data-cert-close]").addEventListener("click", () => viewer.close());
+
+    // Click on the dark backdrop closes it; arrow keys move between certificates.
+    viewer.addEventListener("click", (event) => {
+      if (event.target === viewer) viewer.close();
+    });
+    viewer.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") show(current - 1);
+      if (event.key === "ArrowRight") show(current + 1);
+    });
+  }
+
   // ---- Highlight the nav link for the section in view ----
   const spyLinks = new Map();
   document.querySelectorAll('.nav-links a[href^="#"]').forEach((link) => {
