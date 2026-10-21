@@ -748,3 +748,19 @@ a.cert-row:hover .cert-view svg { transform: translateX(3px); }
   .nav-links::-webkit-scrollbar { display: none; }
   .nav-links a { white-space: nowrap; }
 }
+
+/* Project links + a lone last card spans the row */
+.project-card .project-links { margin: 12px 0 0; }
+.project-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.project-links a:hover { text-decoration: underline; }
+.project-grid > .project-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media (max-width: 720px) {
+  .project-grid > .project-card:last-child:nth-child(odd) { grid-column: auto; }
+}
